@@ -1,26 +1,17 @@
 package project.st991587295.jasleen.ui.Create
 
 import android.app.AlertDialog
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import project.st991587295.jasleen.MainActivity
 import project.st991587295.jasleen.R
 import project.st991587295.jasleen.databinding.FragmentCreateBinding
 import project.st991587295.jasleen.model.Recipe
@@ -36,12 +27,18 @@ class CreateFragment : Fragment() {
     private  var auth: FirebaseAuth ?  =null
     private lateinit var storage: FirebaseStorage
     private  var selectedImage: Uri ? = null
+    var geturl: Uri? = null
     private lateinit var dialog: AlertDialog.Builder
     var categorytext= "Non-Vegetarian"
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+
+    }
 
     override fun onCreateView(
 
@@ -56,16 +53,11 @@ class CreateFragment : Fragment() {
         val root: View = binding.root
         database = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
-             radiobuttonselected()
+            // radiobuttonselected()
         binding.createbtn.setOnClickListener {
-             hashMapOf(
-                "name" to binding.nametxt.text.toString(),
-                "ingredients" to binding.ingredientstxt.text.toString(),
-                "description" to binding.desctxt.text.toString(),
-                "image" to binding.image.toString(),
-                "category" to binding.displaycategory.toString()
-            )
-            UploadData()
+            UploadImage()
+
+
 
 
         }
@@ -79,14 +71,14 @@ class CreateFragment : Fragment() {
         return root
 
     }
-
+/**
     fun UploadData()
     {
         val recipe = Recipe(
             binding.nametxt.text.toString(),
             binding.ingredientstxt.text.toString(),
             binding.desctxt.text.toString(),
-            binding.image.toString(),
+              task.toString(),
             binding.displaycategory.toString()
         )
 
@@ -101,7 +93,7 @@ class CreateFragment : Fragment() {
                 startActivity(Intent(context, MainActivity::class.java))
             }
     }
-
+*/
     fun radiobuttonselected()
     {
 
@@ -124,8 +116,31 @@ class CreateFragment : Fragment() {
             storage.putFile(it).addOnCompleteListener {
                 if (it.isSuccessful) {
                     storage.downloadUrl.addOnSuccessListener { task ->
-                        Toast.makeText(context, "testing", Toast.LENGTH_SHORT).show()
-                      //  uploadInfo(task.toString())
+                   //     Toast.makeText(context, "testing", Toast.LENGTH_SHORT).show()
+                        val map = HashMap<String , Any>()
+                        map["image"] = task.toString()
+                        map["name"] = binding.nametxt!!.text.toString()
+                        map["ingredients"] = binding.ingredientstxt!!.text.toString()
+                        map["description"] to binding.desctxt!!.text.toString()
+                        "category" to radiobuttonselected()
+                        val recipe = Recipe(
+                            binding.nametxt.text.toString(),
+                            binding.ingredientstxt.text.toString(),
+                            binding.desctxt.text.toString(),
+                            task.toString(),
+                            binding.displaycategory.toString()
+                        )
+
+
+
+                        database.collection("recipe")
+                            .document(binding.nametxt.text.toString())
+                            .set(recipe)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Data inserted", Toast.LENGTH_SHORT).show()
+                                UploadImage()
+                                //startActivity(Intent(context, MainActivity::class.java))
+                            }
 
                     }
                 }
@@ -144,6 +159,7 @@ class CreateFragment : Fragment() {
             if (data.data != null) {
                 selectedImage = data.data!!
                 binding.image.setImageURI(selectedImage)
+
             }
         }
     }

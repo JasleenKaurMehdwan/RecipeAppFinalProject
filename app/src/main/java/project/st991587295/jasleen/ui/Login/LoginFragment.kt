@@ -56,7 +56,7 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         var Login = view.findViewById(project.st991587295.jasleen.R.id.btnLogin) as Button
         Login.setOnClickListener {
-            findNavController().navigate(project.st991587295.jasleen.R.id.action_loginFragment_to_navigation_home)
+            findNavController().navigate(R.id.action_loginFragment_to_navigation_home)
         }
 
         var signUpTxtview = view.findViewById(R.id.txtsignup) as TextView

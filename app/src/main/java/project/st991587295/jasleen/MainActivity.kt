@@ -2,6 +2,7 @@ package project.st991587295.jasleen
 
 import android.os.Bundle
 import android.view.View
+import android.widget.SearchView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -31,14 +32,17 @@ class MainActivity : AppCompatActivity() {
             )
         )
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
-
+       // val searchbar = findViewById<SearchView>(R.id.search_action)
         navController.addOnDestinationChangedListener { _, destination, _ ->
             bottomNavigationView.visibility = if(destination.id == R.id.loginFragment) {
                 View.GONE
-            } else {
+            }
+            else {
                 View.VISIBLE
             }
+
         }
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
     }

@@ -17,16 +17,30 @@ import project.st991587295.jasleen.model.Recipe
 
 
 class RecipeAdapter(private val context: Context, private val RecipeList:ArrayList<Recipe>) : RecyclerView.Adapter<RecipeAdapter.ViewHolder>(){
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+   private lateinit var mListener : onItemClickListener
+    interface onItemClickListener {
+        fun onItemClick(position: Int)
+    }
+        fun setOnItemClickListener(clickListener: onItemClickListener)
+        {
+           mListener = clickListener
+        }
+
+    class ViewHolder(itemView: View, clickListener: onItemClickListener) : RecyclerView.ViewHolder(itemView)
     {
         var imageView: ImageView = itemView.findViewById(R.id.recipeimage)
         var name : TextView = itemView.findViewById(R.id.recipename)
-        var category: TextView = itemView.findViewById(R.id.recipecategory)
+       // var category: TextView = itemView.findViewById(R.id.recipecategory)
+        init {
+            itemView.setOnClickListener{
+                clickListener.onItemClick(adapterPosition)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
       val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_list, parent, false)
-        return ViewHolder(itemView)
+        return ViewHolder(itemView, mListener)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -37,7 +51,8 @@ class RecipeAdapter(private val context: Context, private val RecipeList:ArrayLi
         }
         Glide.with(context).load(recipe.image).into(holder.imageView)
         holder.name.text = recipe.name
-        holder.category.text = recipe.category
+
+      // holder.category.text = recipe.category
 
     }
 
